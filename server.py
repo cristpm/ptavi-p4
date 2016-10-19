@@ -8,26 +8,32 @@ import socketserver
 import sys
 # socketserver.DatagramRequestHandler : heredamos para manejar UDP
 
-class EchoHandler(socketserver.DatagramRequestHandler):
+class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
+    clientes = {}
 
     def handle(self): # TRATAMOS EL SOCKET COMO UN FICHERO
+        
         Ip_client = self.client_address[0]
         P_client = self.client_address[1]
-        
-        self.wfile.write(b"Hemos recibido tu peticion")
+        print('TUS DATOS SON:')
+        print("IP = ", Ip_client, "Puerto = ", P_client)
         for line in self.rfile:# leemos el socket
-            print("IP cliente = ", Ip_client, "Puerto cliente = ", P_client)
-            print("El cliente nos manda ", line.decode('utf-8'))
+            l = line.decode('utf-8')
+            if l.split(' ')[0] == 'REGISTER':# si la linea tiene la cab REGISTER
+                print("El cliente nos manda",l)
+                SIPRegisterHandler.clientes[l.split(' ')[1][4:]] = Ip_client
+                self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+                print("USUARIOS ==> ", SIPRegisterHandler.clientes)
+        
             
-
 if __name__ == "__main__":
 
     # ip y puerto donde escucha el servidor y clase que maneja la peticion
     PORT = int(sys.argv[1]) 
-    serv = socketserver.UDPServer(('', PORT), EchoHandler) 
+    serv = socketserver.UDPServer(('', PORT), SIPRegisterHandler) 
     print("Lanzando servidor UDP de eco...")
     try:
         # bucle esperando peticiones

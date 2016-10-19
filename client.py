@@ -10,7 +10,7 @@ import sys
 # Constantes. Dirección IP del servidor y contenido a enviar
 SERVER = sys.argv[1]
 PORT = int(sys.argv[2]) 
-LINE = ' '.join(sys.argv[3:]) 
+LINE = 'REGISTER sip:' + sys.argv[4] + ' SIP/2.0\r\n\r\n'
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 # tipo de red, tipo de paquete son constantes de paquete socket
