@@ -8,10 +8,15 @@ import socket
 import sys
 
 # Constantes. Dirección IP del servidor y contenido a enviar
-SERVER = sys.argv[1]
-PORT = int(sys.argv[2]) 
-USER = sys.argv[4]
-LINE = 'REGISTER sip:' + USER + ' SIP/2.0\r\nExpires: ' + sys.argv[5] + '\r\n'
+try:
+    SERVER = sys.argv[1]
+    PORT = int(sys.argv[2]) 
+    USER = sys.argv[4]
+    Expires = sys.argv[5]
+    LINE = 'REGISTER sip:' + USER + ' SIP/2.0\r\nExpires: ' + Expires + '\r\n'
+except IndexError:
+    sys.exit("Usage: client.py ip puerto register sip_address expires_value")
+
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 # tipo de red, tipo de paquete son constantes de paquete socket

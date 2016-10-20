@@ -22,17 +22,16 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         for line in self.rfile:# leemos el socket
             l = line.decode('utf-8')
             print(l)
-            if l.split(' ')[0] == 'REGISTER':# si la linea tiene la cab REGISTER
-                User = l.split(' ')[1][4:]
-                SIPRegisterHandler.clientes[User] = Ip_client
-                self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-                print("USUARIOS ==> ", SIPRegisterHandler.clientes)
+            if l.split(' ')[0] == 'REGISTER':
+                client = l.split(' ')[1][4:]
             if l.split(' ')[0] == 'Expires:':
                 time = l.split(' ')[1][0:-2]
                 if time == '0':
-                    del SIPRegisterHandler.clientes[User]
-                    self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-                    print("USUARIOS ==> ", SIPRegisterHandler.clientes)
+                    del SIPRegisterHandler.clientes[client]
+                else:
+                    SIPRegisterHandler.clientes[client] = Ip_client
+        self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+        print("CLIENTES ==> ", SIPRegisterHandler.clientes)
         
             
 if __name__ == "__main__":
