@@ -6,33 +6,52 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 
 import socketserver
 import sys
+import time
+import json
 # socketserver.DatagramRequestHandler : heredamos para manejar UDP
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
-    clientes = {}
+    clientes = []
 
     def handle(self): # TRATAMOS EL SOCKET COMO UN FICHERO
         
+        self.expiration()
         Ip_client = self.client_address[0]
         P_client = self.client_address[1]
         print('TUS DATOS SON:', "IP = ", Ip_client, "Puerto = ", P_client)
         for line in self.rfile:# leemos el socket
             l = line.decode('utf-8')
-            print(l)
+            ##print(l)
             if l.split(' ')[0] == 'REGISTER':
-                client = l.split(' ')[1][4:]
+                direc = l.split(' ')[1][4:]
             if l.split(' ')[0] == 'Expires:':
-                time = l.split(' ')[1][0:-2]
-                if time == '0':
-                    del SIPRegisterHandler.clientes[client]
-                else:
-                    SIPRegisterHandler.clientes[client] = Ip_client
+                t = int(l.split(' ')[1][0:-2])
+        exp = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() + t))
+        client = [direc, {"address": Ip_client , "expires" : exp}] 
+        if t == 0:
+            for user in self.clientes:
+                if user[0] == direc:
+                    self.clientes.remove(user)
+        else:
+            self.clientes.append(client)
+        self.register2json()
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-        print("CLIENTES ==> ", SIPRegisterHandler.clientes)
+        print("CLIENTES ==> ", self.clientes)
         
+    def register2json(self):
+        json.dump(self.clientes, open('registered.json', 'w'),indent = 4)
+  
+    def expiration(self):
+        gmt = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
+        for user in self.clientes:
+            if gmt > user[1]['expires']:
+                self.clientes.remove(user)
+                
+    def json2registered(self)
+            
             
 if __name__ == "__main__":
 
