@@ -17,7 +17,8 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     clientes = []
 
     def handle(self): # TRATAMOS EL SOCKET COMO UN FICHERO
-        
+    
+        self.json2registered()
         self.expiration()
         Ip_client = self.client_address[0]
         P_client = self.client_address[1]
@@ -50,7 +51,13 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             if gmt > user[1]['expires']:
                 self.clientes.remove(user)
                 
-    def json2registered(self)
+    def json2registered(self):
+        try:
+            with open('registered.json') as data_file:    
+                self.clientes = json.load(data_file)
+        except:
+            print('NO EXISTE registered.json') 
+            
             
             
 if __name__ == "__main__":
