@@ -1,13 +1,9 @@
-#!/usr/bin/python3
+"""Programa cliente UDP que abre un socket a un servidor."""
+# !/usrbin/python3.
 # -*- coding: utf-8 -*-
-"""
-Programa cliente UDP que abre un socket a un servidor
-"""
-
 import socket
 import sys
 
-# Constantes. Dirección IP del servidor y contenido a enviar
 try:
     SERVER = sys.argv[1]
     PORT = int(sys.argv[2])
@@ -17,12 +13,10 @@ try:
 except IndexError:
     sys.exit("Usage: client.py ip puerto register sip_address expires_value")
 
-
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
-    my_socket.connect((SERVER, PORT))  # nos conectamos con el servidor tupla
+    my_socket.connect((SERVER, PORT))  # nos conectamos con el servidor
     print("Enviando:", LINE)
     my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')  # enviamos
-    # cadena de caracteres en bytes
     data = my_socket.recv(1024)  # guarda en data lo q recibo tamaño buffer
     print('Recibido -- ', data.decode('utf-8'))  # decodifica de bytes a utf-8
 print("Socket terminado.")

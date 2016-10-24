@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Clase (y programa principal) para un servidor de eco en UDP simple
-"""
+"""Servidor sobre UDP implementado como Register SIP."""
 
 import socketserver
 import sys
@@ -12,13 +10,12 @@ import json
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
-    """
-    Echo server class
-    """
+    """Echo server class."""
+
     clientes = []
 
     def handle(self):  # TRATAMOS EL SOCKET COMO UN FICHERO
-
+        """Handle Register SIP."""
         self.json2registered()
         self.expiration()
         Ip_client = self.client_address[0]
@@ -47,30 +44,31 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         print("CLIENTES ==> ", self.clientes)
 
     def register2json(self):
+        """passe customer lists to json."""
         json.dump(self.clientes, open('registered.json', 'w'), indent=4)
 
     def expiration(self):
+        """remove clients expired."""
         gmt = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
         for user in self.clientes:
             if gmt > user[1]['expires']:
                 self.clientes.remove(user)
 
     def json2registered(self):
+        """Customer copy a file json."""
         try:
             with open('registered.json') as data_file:
                 self.clientes = json.load(data_file)
         except:
-            print('NO EXISTE registered.json')
+            pass
 
 
 if __name__ == "__main__":
 
-    # ip y puerto donde escucha el servidor y clase que maneja la peticion
     PORT = int(sys.argv[1])
     serv = socketserver.UDPServer(('', PORT), SIPRegisterHandler)
     print("Lanzando servidor UDP de eco...")
     try:
-        # bucle esperando peticiones
         serv.serve_forever()
     except KeyboardInterrupt:
         print("Finalizado servidor")
