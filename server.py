@@ -6,7 +6,6 @@ import socketserver
 import sys
 import time
 import json
-# socketserver.DatagramRequestHandler : heredamos para manejar UDP
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
@@ -23,7 +22,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         print('TUS DATOS SON:', "IP = ", Ip_client, "Puerto = ", P_client)
         for line in self.rfile:  # leemos el socket
             l = line.decode('utf-8')
-            # print(l)
+            print(l)
             if l.split(' ')[0] == 'REGISTER':
                 direc = l.split(' ')[1][4:]
             if l.split(' ')[0] == 'Expires:':
@@ -41,7 +40,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             self.clientes.append(client)
         self.register2json()
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-        print("CLIENTES ==> ", self.clientes)
+        print("CLIENTES ==>", self.clientes)
 
     def register2json(self):
         """passe customer lists to json."""
