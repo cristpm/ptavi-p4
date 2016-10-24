@@ -37,7 +37,10 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             for user in self.clientes:
                 if user[0] == direc:
                     self.clientes.remove(user)
-        else:
+        if t > 0:
+            for user in self.clientes:
+                if user[0] == direc:
+                    self.clientes.remove(user)
             self.clientes.append(client)
         self.register2json()
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
